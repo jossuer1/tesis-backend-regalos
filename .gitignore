@@ -1,0 +1,29 @@
+# Dependencias
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Variables de entorno (Seguridad)
+.env
+.env.test
+.env.local
+
+# Carpeta de producción / build
+dist/
+build/
+
+# IDEs y Editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
