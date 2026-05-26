@@ -1,4 +1,4 @@
-import sendMail from "../config/nodemaile.js"
+import { sendMail } from "../config/nodemaile.js"
 
 // Estilo para los botones (se usa en ambos correos)
 const btnStyle = "display: inline-block; background-color: #df4759; color: #ffffff; text-decoration: none; padding: 10px 20px; font-weight: 500; border-radius: 6px; margin: 15px 0;"
