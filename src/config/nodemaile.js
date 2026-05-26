@@ -10,13 +10,6 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.USER_MAILTRAP, 
         pass: process.env.PASS_MAILTRAP, 
-    },
-  
-    dnsTimeout: 10000,
-    connectionTimeout: 10000,
-    socketTimeout: 10000,
-    connection: {
-        family: 4
     }
 })
 const sendMail = async (to, subject, html) => {
