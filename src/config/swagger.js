@@ -12,8 +12,8 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "https://regalos-magicos-sob7.onrender.com/api",
-        description: "Servidor de Producción (Render)"
+        url: "/api",
+        description: "Servidor Actual (Dinámico)"
       },
       {
         url: "http://localhost:8000/api",
