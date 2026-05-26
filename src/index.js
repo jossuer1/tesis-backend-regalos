@@ -1,6 +1,9 @@
 import connection from './database.js'
 import app from './server.js'
 
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
+
 // Conectar a MongoDB
 connection()
 
