@@ -6,7 +6,6 @@ import { swaggerDocs } from "./config/swagger.js"
 
 dotenv.config()
 
-swaggerDocs(app)
 
 // todo lo que se importe abajo (incluyendo las rutas) ya pueda leer el .env
 
@@ -29,6 +28,9 @@ app.set('port', process.env.PORT || 3000)
 
 // Rutas 
 app.get('/', (req, res) => res.send("Server on"))
+
+swaggerDocs(app)
+
 
 // Enlazamos el router con el prefijo /api
 app.use('/api', router)
