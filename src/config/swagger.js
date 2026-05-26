@@ -13,9 +13,18 @@ const options = {
       {
         url: process.env.URL_BACKEND || "http://localhost:8000"
       }
-    ]
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    }
   },
-  apis: ["./src/routers/*.js"] // donde leerá comentarios
+  apis: ["./src/routers/*.js"]
 }
 
 const swaggerSpec = swaggerJSDoc(options)

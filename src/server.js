@@ -21,7 +21,6 @@ const app = express()
 // Middlewares -C
 app.use(express.json())
 app.use(cors())
-
 // Variables globales y de entorno
 // usar el puerto de la variable de entorno si existe, sino usar el 3000
 app.set('port', process.env.PORT || 3000)
