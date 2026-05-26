@@ -6,11 +6,13 @@ dotenv.config()
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
-    secure: true,
+    secure: true, 
     auth: {
         user: process.env.USER_MAILTRAP,
         pass: process.env.PASS_MAILTRAP,
     },
+    connectionTimeout: 10000, 
+    greetingTimeout: 10000,
 })
 
 const sendMail = async (to, subject, html) => {
