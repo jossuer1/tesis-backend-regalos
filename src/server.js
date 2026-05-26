@@ -2,9 +2,14 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors';
+import { swaggerDocs } from "./config/swagger.js"
+
+dotenv.config()
+
+swaggerDocs(app)
 
 // todo lo que se importe abajo (incluyendo las rutas) ya pueda leer el .env
-dotenv.config()
+
 
 // Ahora sí cargamos el router de forma segura
 import router from './routers/usuario_route.js'
