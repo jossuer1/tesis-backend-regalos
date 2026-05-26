@@ -21,7 +21,7 @@
     "fs-extra": "^11.3.5",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.2",
-    "nodemailer": "^8.0.7",
+    "nodemailer": "^8.0.8",
     "socket.io": "^4.8.3",
     "stripe": "^22.1.1",
     "swagger-jsdoc": "^6.3.0",

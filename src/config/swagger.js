@@ -27,6 +27,14 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
+
+const options = {
+  customCss: '.swagger-ui .topbar { display: none }', 
+  swaggerOptions: {
+    validatorUrl: null 
+  }
+};
+
 export const swaggerDocs = (app) => {
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, false, options));
 };

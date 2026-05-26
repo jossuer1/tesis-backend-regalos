@@ -1,37 +1,36 @@
-import nodemailer from "nodemailer"
-import dotenv from "dotenv"
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, 
-    auth: {
-        user: process.env.USER_MAILTRAP, 
-        pass: process.env.PASS_MAILTRAP, 
-    }
-})
+// Creamos el transporte apuntando a los servidores de Brevo
+const transport = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  secure: false, // Debe ser false para el puerto 587 (usa TLS)
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+});
 
-const sendMail = async (to, subject, html) => {
+/**
+ * Función para enviar correos reales
+ */
+export const sendMail = async (emailDestino, asunto, contenidoHtml) => {
+  try {
+    const mailOptions = {
+      from: '"Regalos Mágicos ✨" <rojasjosue55a@gmail.com>', // Tu correo emisor de Brevo
+      to: emailDestino,
+      subject: asunto,
+      html: contenidoHtml,
+    };
 
-    try {
-
-        const info = await transporter.sendMail({
-            from: '"Regalos Mágicos" <rojasjosue55a@gmail.com>',
-            to,
-            subject,
-            html,
-        })
-
-        console.log("✅ Email enviado:", info.messageId)
-
-    } catch (error) {
-
-        console.error("❌ Error enviando email:", error.message)
-
-        throw error
-    }
-}
-
-export default sendMail
+    const info = await transport.sendMail(mailOptions);
+    console.log("✅ ¡Correo REAL enviado con Brevo! ID:", info.messageId);
+    return info;
+  } catch (error) {
+    console.error("❌ Error enviando correo real:", error.message);
+    throw error;
+  }
+};
