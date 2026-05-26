@@ -1,0 +1,157 @@
+{
+  "paths": {
+    "/registro": {
+      "post": {
+        "summary": "Registrar usuario",
+        "tags": ["Usuarios"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "email", "password"],
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "apellido": { "type": "string" },
+                  "telefono": { "type": "string" },
+                  "direccion": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Usuario registrado con éxito" }
+        }
+      }
+    },
+    "/confirmar/{token}": {
+      "get": {
+        "summary": "Confirmar cuenta por token",
+        "tags": ["Usuarios"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Cuenta confirmada con éxito" }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "Iniciar sesión",
+        "tags": ["Usuarios"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login exitoso (retorna JWT)" }
+        }
+      }
+    },
+    "/reset": {
+      "post": {
+        "summary": "Solicitar reset de contraseña",
+        "tags": ["Usuarios"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Email de recuperación enviado" }
+        }
+      }
+    },
+    "/reset/{token}": {
+      "get": {
+        "summary": "Validar token de reset",
+        "tags": ["Usuarios"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Token válido" }
+        }
+      }
+    },
+    "/nuevopassword/{token}": {
+      "post": {
+        "summary": "Crear nueva contraseña",
+        "tags": ["Usuarios"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["password"],
+                "properties": {
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Contraseña cambiada con éxito" }
+        }
+      }
+    },
+    "/perfil": {
+      "get": {
+        "summary": "Obtener perfil del usuario",
+        "tags": ["Usuarios"],
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": { "description": "Perfil obtenido" },
+          "401": { "description": "No autorizado" }
+        }
+      }
+    }
+  }
+}

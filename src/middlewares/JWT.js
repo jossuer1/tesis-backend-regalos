@@ -14,7 +14,7 @@ const verificarTokenJWT = async (req, res, next) => {
         const { id, rol } = jwt.verify(token, process.env.JWT_SECRET)
         
         // Validamos el rol (Vendedor) de forma segura
-        if (rol && rol.toLowerCase() === "vendedor") {
+        if (rol && rol.toLowerCase() === "usuario") {
             const usuarioBDD = await Usuario.findById(id).lean().select("-password")
             if (!usuarioBDD) return res.status(401).json({ msg: "Usuario no encontrado" })
             

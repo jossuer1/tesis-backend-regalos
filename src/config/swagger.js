@@ -1,34 +1,32 @@
-import swaggerJSDoc from "swagger-jsdoc"
-import swaggerUi from "swagger-ui-express"
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import usuarioRoutesDoc from "../docs/usuario.json" with { type: "json" };
 
-const options = {
+const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Regalos Mágicos API",
+      title: "API de Usuarios - Regalos Mágicos ✨",
       version: "1.0.0",
-      description: "Documentación del backend"
+      description: "Documentación oficial del módulo de usuarios"
     },
     servers: [
       {
-        url: process.env.URL_BACKEND || "http://localhost:8000"
+        url: "https://regalos-magicos.onrender.com/api",
+        description: "Servidor de Producción (Render)"
+      },
+      {
+        url: "http://localhost:8000/api",
+        description: "Servidor Local de Desarrollo"
       }
     ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT"
-        }
-      }
-    }
+    paths: usuarioRoutesDoc.paths
   },
-  apis: ["./src/routers/*.js"]
-}
+  apis: [], 
+};
 
-const swaggerSpec = swaggerJSDoc(options)
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 export const swaggerDocs = (app) => {
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
-}
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+};
