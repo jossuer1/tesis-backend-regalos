@@ -1,5 +1,6 @@
-import connection from './database.js'
 import app from './server.js'
+import connection from './database.js'
+
 
 
 // Conectar a MongoDB

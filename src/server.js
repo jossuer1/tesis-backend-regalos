@@ -1,10 +1,9 @@
 // Requerir módulos
+import 'dotenv/config';
 import express from 'express'
-import dotenv from 'dotenv'
 import cors from 'cors';
 import { swaggerDocs } from "./config/swagger.js"
 
-dotenv.config()
 
 
 // todo lo que se importe abajo (incluyendo las rutas) ya pueda leer el .env
