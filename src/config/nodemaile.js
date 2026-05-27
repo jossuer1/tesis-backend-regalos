@@ -8,10 +8,8 @@ dotenv.config();
  */
 export const sendMail = async (emailDestino, asunto, contenidoHtml) => {
   try {
-    // 🚨 Usamos la contraseña larga de Brevo (tu API Key de SMTP)
     const apiKey = process.env.SMTP_PASS; 
 
-     console.log("🔑 API KEY:", apiKey ? `encontrada (${apiKey.length} chars)` : "UNDEFINED");
 
     if (!apiKey) {
       throw new Error("Falta la variable SMTP_PASS en el entorno");
@@ -27,7 +25,7 @@ export const sendMail = async (emailDestino, asunto, contenidoHtml) => {
       body: JSON.stringify({
         sender: { 
           name: "Regalos Mágicos ✨", 
-          email: "ac999c001@smtp-brevo.com" // Tu correo emisor de Brevo
+          email: "rojasjosue55a@gmail.com" // Tu correo emisor de Brevo
         },
         to: [{ email: emailDestino }],
         subject: asunto,
