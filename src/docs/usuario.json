@@ -110,36 +110,37 @@
       }
     },
     "/nuevopassword/{token}": {
-      "post": {
-        "summary": "Crear nueva contraseña",
-        "tags": ["Usuarios"],
-        "parameters": [
-          {
-            "in": "path",
-            "name": "token",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["password"],
-                "properties": {
-                  "password": { "type": "string" }
-                }
-              }
+  "post": {
+    "summary": "Crear nueva contraseña",
+    "tags": ["Usuarios"],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "token",
+        "required": true,
+        "schema": { "type": "string" }
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["password", "confirmpassword"],
+            "properties": {
+              "password": { "type": "string" },
+              "confirmpassword": { "type": "string" }
             }
           }
-        },
-        "responses": {
-          "200": { "description": "Contraseña cambiada con éxito" }
         }
       }
     },
+    "responses": {
+      "200": { "description": "Contraseña cambiada con éxito" }
+    }
+  }
+},
     "/perfil": {
       "get": {
         "summary": "Obtener perfil del usuario",
