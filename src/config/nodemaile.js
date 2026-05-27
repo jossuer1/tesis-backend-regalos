@@ -11,6 +11,8 @@ export const sendMail = async (emailDestino, asunto, contenidoHtml) => {
     // 🚨 Usamos la contraseña larga de Brevo (tu API Key de SMTP)
     const apiKey = process.env.SMTP_PASS; 
 
+     console.log("🔑 API KEY:", apiKey ? `encontrada (${apiKey.length} chars)` : "UNDEFINED");
+
     if (!apiKey) {
       throw new Error("Falta la variable SMTP_PASS en el entorno");
     }
