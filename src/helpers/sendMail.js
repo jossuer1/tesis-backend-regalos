@@ -12,7 +12,7 @@ const sendMailToRegister = (userMail, token) => {
             <h2 style="color: #111;">Confirma tu cuenta</h2>
             <p>Hola, gracias por registrarte en <strong>Regalos Mágicos</strong>. Haz clic en el siguiente enlace para activar tu cuenta:</p>
             
-            <a href="${process.env.URL_FRONTEND}confirm/${token}" style="${btnStyle}">
+            <a href="${process.env.URL_FRONTEND}confirmar/${token}" style="${btnStyle}">
                 Confirmar cuenta
             </a>
             
