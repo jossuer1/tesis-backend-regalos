@@ -45,7 +45,7 @@ const usuarioSchema = new Schema(
     },
     rol: {
         type: String,
-        default: "Vendedor" 
+        default: "Cliente" 
     }
 },
 {
