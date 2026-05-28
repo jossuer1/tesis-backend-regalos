@@ -6,46 +6,71 @@ const usuarioSchema = new Schema(
     nombre: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        minlength: 2,
+        maxlength: 50,
+        match: [/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, "Solo letras permitidas"]
     },
+
     apellido: {
         type: String,
         trim: true,
-        default: null
+        default: null,
+        minlength: 2,
+        maxlength: 50,
+        match: [/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/, "Solo letras permitidas"]
     },
+
     telefono: { 
         type: String,
-        required: true
+        required: true,
+        match: [/^\d{7,15}$/, "Solo números válidos"]
     },
+
     direccion: { 
         type: String,
-        default: null
+        default: null,
+        maxlength: 150
     },
+
     email: {
         type: String,
         required: true,
         trim: true,
-        unique: true
+        unique: true,
+        lowercase: true,
+        match: [/\S+@\S+\.\S+/, "Correo inválido"]
     },
+
     password: {
         type: String,
-        required: true
+        required: true,
+        minlength: 8,
+        match: [
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+            "La contraseña debe tener mayúscula, minúscula y número"
+        ]
     },
+
     status: {
         type: Boolean,
         default: true
     },
+
     token: {
         type: String,
         default: null
     },
+
     confirmEmail: {
         type: Boolean,
         default: false
     },
+
     rol: {
         type: String,
-        default: "Cliente" 
+        enum: ["Cliente", "Admin"],
+        default: "Cliente"
     }
 },
 {
