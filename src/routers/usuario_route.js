@@ -6,7 +6,8 @@ import {
   comprobarTokenPassword,
   registro,
   login,
-  perfil
+  perfil,
+  crearUsuarioDesdeAdmin
 } from "../controllers/usuario_controller.js"
 
 import { verificarTokenJWT } from "../middlewares/JWT.js"
@@ -33,5 +34,8 @@ router.post("/nuevopassword/:token", crearNuevoPassword)
 
 // 🔵 PERFIL (PROTEGIDO JWT)
 router.get("/perfil", verificarTokenJWT, perfil)
+
+// 🔵 CREAR USUARIO DESDE ADMIN
+router.post("/admin/crear-usuario", crearUsuarioDesdeAdmin)
 
 export default router

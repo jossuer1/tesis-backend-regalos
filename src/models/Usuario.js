@@ -69,7 +69,7 @@ const usuarioSchema = new Schema(
 
     rol: {
         type: String,
-        enum: ["Cliente", "Admin"],
+        enum: ["Cliente", "Admin", "Vendedor"],
         default: "Cliente"
     }
 },
