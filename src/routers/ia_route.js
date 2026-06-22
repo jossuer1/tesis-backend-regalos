@@ -4,6 +4,6 @@ import { recomendarRegalos } from "../controllers/ia_controller.js"
 const router = Router()
 
 // 🔎 POST /api/ia/recomendar
-router.post("/ia/recomendar", recomendarRegalos)
+router.post("/recomendar", recomendarRegalos)
 
 export default router
