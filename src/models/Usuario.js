@@ -23,7 +23,10 @@ const usuarioSchema = new Schema(
 
     telefono: { 
         type: String,
-        required: true,
+        required: function () {
+            return this.authProvider === "local"
+        },
+        default: null,
         match: [/^\d{7,15}$/, "Solo números válidos"]
     },
 
@@ -44,12 +47,24 @@ const usuarioSchema = new Schema(
 
     password: {
         type: String,
-        required: true,
-        minlength: 8,
-        match: [
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
-            "La contraseña debe tener mayúscula, minúscula y número"
-        ]
+        required: function () {
+            return this.authProvider === "local"
+        },
+        default: null,
+        minlength: 8
+    },
+
+    authProvider: {
+        type: String,
+        enum: ["local", "google"],
+        default: "local"
+    },
+
+    googleId: {
+        type: String,
+        default: null,
+        unique: true,
+        sparse: true 
     },
 
     status: {

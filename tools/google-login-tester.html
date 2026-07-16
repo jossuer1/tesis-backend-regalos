@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+  ⚠️ ESTO NO ES PARTE DE TU APP NI DE TU FRONTEND.
+  Es solo una herramienta de prueba para que TÚ obtengas un ID Token real de Google
+  y puedas copiarlo para probar el endpoint POST /api/usuarios/google con Postman/curl.
+
+  CÓMO USARLA:
+  1. Ve a https://console.cloud.google.com/apis/credentials
+  2. Crea un "OAuth Client ID" de tipo "Web application"
+  3. En "Authorized JavaScript origins" agrega: http://localhost:5500  (o el puerto que uses)
+  4. Copia el Client ID y pégalo abajo en YOUR_GOOGLE_CLIENT_ID
+  5. Copia ese mismo Client ID en tu .env como GOOGLE_CLIENT_ID
+  6. Abre este archivo con Live Server (o "python3 -m http.server 5500") — NO con doble clic
+     (file:// no funciona con Google Identity Services, necesita http://)
+  7. Haz clic en el botón, inicia sesión, y el ID Token aparecerá en el cuadro de texto
+  8. Copia ese token y pruébalo con:
+     curl -X POST http://localhost:8000/api/usuarios/google \
+       -H "Content-Type: application/json" \
+       -d "{\"credential\":\"PEGA_AQUI_EL_TOKEN\"}"
+-->
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tester de Google Login (solo para pruebas de backend)</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 640px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 140px;
+            margin-top: 16px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        button {
+            margin-top: 8px;
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>🧪 Tester de Google Login (solo backend)</h2>
+    <p>Inicia sesión con Google para obtener un <code>ID Token</code> real y probar tu endpoint
+        <code>POST /api/usuarios/google</code>.</p>
+
+    <div id="g_id_onload" data-client_id="YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com"
+        data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+
+    <p>Token generado (cópialo y pégalo en Postman o curl):</p>
+    <textarea id="tokenBox" readonly placeholder="Aquí aparecerá el ID Token después de iniciar sesión..."></textarea>
+    <br>
+    <button onclick="copiarToken()">Copiar token</button>
+    <button onclick="probarBackend()">Probar directo contra mi backend (localhost:8000)</button>
+
+    <pre id="resultado" style="background:#f4f4f4; padding:12px; margin-top:16px; white-space:pre-wrap;"></pre>
+
+    <script>
+        let ultimoToken = ""
+
+        function handleCredentialResponse(response) {
+            ultimoToken = response.credential
+            document.getElementById("tokenBox").value = ultimoToken
+        }
+
+        function copiarToken() {
+            navigator.clipboard.writeText(ultimoToken)
+            alert("Token copiado 📋")
+        }
+
+        async function probarBackend() {
+            if (!ultimoToken) {
+                alert("Primero inicia sesión con Google")
+                return
+            }
+            const resEl = document.getElementById("resultado")
+            resEl.textContent = "Enviando al backend..."
+            try {
+                const res = await fetch("http://localhost:8000/api/usuarios/google", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ credential: ultimoToken })
+                })
+                const data = await res.json()
+                resEl.textContent = `Status: ${res.status}\n\n` + JSON.stringify(data, null, 2)
+            } catch (err) {
+                resEl.textContent = "Error de red: " + err.message
+            }
+        }
+    </script>
+</body>
+
+</html>

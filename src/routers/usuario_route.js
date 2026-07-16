@@ -6,8 +6,10 @@ import {
   comprobarTokenPassword,
   registro,
   login,
+  loginGoogle,
   perfil,
-  crearUsuarioDesdeAdmin
+  crearUsuarioDesdeAdmin,
+  actualizarPerfil
 } from "../controllers/usuario_controller.js"
 
 import { verificarTokenJWT } from "../middlewares/JWT.js"
@@ -23,6 +25,9 @@ router.get("/confirmar/:token", confirmarMail)
 // 🟢 LOGIN
 router.post("/login", login)
 
+// 🟢 LOGIN / REGISTRO CON GOOGLE
+router.post("/google", loginGoogle)
+
 // 🟢 RECUPERAR PASSWORD
 router.post("/reset", recuperarPassword)
 
@@ -34,6 +39,9 @@ router.post("/nuevopassword/:token", crearNuevoPassword)
 
 // 🔵 PERFIL (PROTEGIDO JWT)
 router.get("/perfil", verificarTokenJWT, perfil)
+
+// 🔵 ACTUALIZAR PERFIL (PROTEGIDO JWT)
+router.put("/perfil/actualizar/:id", verificarTokenJWT, actualizarPerfil)
 
 // 🔵 CREAR USUARIO DESDE ADMIN
 router.post("/admin/crear-usuario", crearUsuarioDesdeAdmin)

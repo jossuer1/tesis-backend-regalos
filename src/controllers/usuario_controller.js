@@ -1,6 +1,10 @@
 import { crearTokenJWT } from "../middlewares/JWT.js" 
 import { sendMailToRecoveryPassword, sendMailToRegister,sendMailToNuevoUsuarioAdmin } from "../helpers/sendMail.js"
 import Usuario from "../models/Usuario.js"
+import { OAuth2Client } from "google-auth-library"
+
+// Cliente para verificar los ID Tokens que Google emite en el frontend
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
 
 // REGISTRO DE USUARIO 
 const registro = async (req, res) => {
@@ -283,6 +287,166 @@ const crearUsuarioDesdeAdmin = async (req, res) => {
     }
 }
 
+// INICIO/REGISTRO DE SESIÓN CON GOOGLE
+const loginGoogle = async (req, res) => {
+    try {
+        const { credential } = req.body
+
+        if (!credential) {
+            return res.status(400).json({ msg: "Falta el token de Google (credential)" })
+        }
+
+        // 1. Verificar el token directamente con los servidores de Google.
+        //    Esto confirma que el token es auténtico y no fue falsificado.
+        let payload
+        try {
+            const ticket = await googleClient.verifyIdToken({
+                idToken: credential,
+                audience: process.env.GOOGLE_CLIENT_ID
+            })
+            payload = ticket.getPayload()
+        } catch (error) {
+            console.error("ERROR VERIFICANDO TOKEN DE GOOGLE:", error)
+            return res.status(401).json({ msg: "Token de Google inválido o expirado" })
+        }
+
+        const { sub: googleId, email, given_name, family_name, email_verified } = payload
+
+        if (!email_verified) {
+            return res.status(401).json({ msg: "El correo de Google no está verificado" })
+        }
+
+        const emailNormalizado = email.toLowerCase().trim()
+
+        // 2. Buscar si ya existe un usuario con ese googleId o con ese email
+        let usuarioBDD = await Usuario.findOne({
+            $or: [{ googleId }, { email: emailNormalizado }]
+        })
+
+        if (usuarioBDD) {
+            // Si existía por email pero se registró antes de forma local, lo vinculamos con Google
+            if (!usuarioBDD.googleId) {
+                usuarioBDD.googleId = googleId
+                usuarioBDD.authProvider = usuarioBDD.authProvider === "local" ? usuarioBDD.authProvider : "google"
+                usuarioBDD.confirmEmail = true
+                await usuarioBDD.save()
+            }
+        } else {
+            // 3. No existe: lo creamos automáticamente con los datos de Google
+            usuarioBDD = new Usuario({
+                nombre: given_name || "Usuario",
+                apellido: family_name || null,
+                email: emailNormalizado,
+                googleId,
+                authProvider: "google",
+                confirmEmail: true // Google ya verificó el correo por nosotros
+            })
+            await usuarioBDD.save()
+        }
+
+        const { nombre, apellido, direccion, telefono, _id, rol } = usuarioBDD
+        const token = crearTokenJWT(_id, rol)
+
+        return res.status(200).json({
+            token,
+            nombre,
+            apellido,
+            direccion,
+            telefono,
+            _id,
+            email: usuarioBDD.email,
+            rol
+        })
+
+    } catch (error) {
+        console.error("ERROR EN LOGIN GOOGLE:", error)
+        return res.status(500).json({ msg: `❌ Error en el servidor - ${error.message}` })
+    }
+}
+
+// ACTUALIZAR PERFIL DEL USUARIO AUTENTICADO
+const actualizarPerfil = async (req, res) => {
+    try {
+        const { id } = req.params; // O puedes usar req.usuario._id directamente para mayor seguridad
+        const { nombre, apellido, telefono, direccion, email } = req.body;
+
+        // 1. Validar que el usuario que intenta editar sea el mismo dueño del token
+        if (req.usuario._id.toString() !== id) {
+            return res.status(403).json({ msg: "No tienes permisos para actualizar este perfil" });
+        }
+
+        // 2. Buscar al usuario en la base de datos
+        const usuarioBDD = await Usuario.findById(id);
+        if (!usuarioBDD) {
+            return res.status(404).json({ msg: "Usuario no encontrado" });
+        }
+
+        // 3. Validar campos obligatorios mínimos
+        if (!nombre || !email) {
+            return res.status(400).json({ msg: "El nombre y el correo electrónico son obligatorios" });
+        }
+
+        // 4. Validar formato de Nombre y Apellido (Letras únicamente)
+        const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+        if (!regexNombre.test(nombre.trim())) {
+            return res.status(400).json({ msg: "El nombre solo puede contener letras" });
+        }
+        if (apellido && !regexNombre.test(apellido.trim())) {
+            return res.status(400).json({ msg: "El apellido solo puede contener letras" });
+        }
+
+        // 5. Validar formato del Teléfono (Solo números, de 7 a 15 dígitos)
+        if (telefono) {
+            const regexTelefono = /^\d{7,15}$/;
+            if (!regexTelefono.test(telefono.trim())) {
+                return res.status(400).json({ msg: "El teléfono solo debe contener números (entre 7 y 15 dígitos)" });
+            }
+        }
+
+        // 6. Validar formato del Email
+        const emailNormalizado = email.toLowerCase().trim();
+        const regexEmail = /\S+@\S+\.\S+/;
+        if (!regexEmail.test(emailNormalizado)) {
+            return res.status(400).json({ msg: "Correo electrónico inválido" });
+        }
+
+        // 7. Verificar si el nuevo email ya está en uso por OTRO usuario
+        if (usuarioBDD.email !== emailNormalizado) {
+            const existeEmail = await Usuario.findOne({ email: emailNormalizado });
+            if (existeEmail) {
+                return res.status(400).json({ msg: "El correo electrónico ya está registrado por otro usuario" });
+            }
+            usuarioBDD.email = emailNormalizado;
+        }
+
+        // 8. Asignar los nuevos valores
+        usuarioBDD.nombre = nombre.trim();
+        usuarioBDD.apellido = apellido ? apellido.trim() : null;
+        usuarioBDD.telefono = telefono ? telefono.trim() : null;
+        usuarioBDD.direccion = direccion ? direccion.trim() : null;
+
+        // 9. Guardar cambios en la base de datos
+        await usuarioBDD.save();
+
+        return res.status(200).json({ 
+            msg: "Perfil actualizado correctamente",
+            usuario: {
+                _id: usuarioBDD._id,
+                nombre: usuarioBDD.nombre,
+                apellido: usuarioBDD.apellido,
+                email: usuarioBDD.email,
+                telefono: usuarioBDD.telefono,
+                direccion: usuarioBDD.direccion,
+                rol: usuarioBDD.rol
+            }
+        });
+
+    } catch (error) {
+        console.error("ERROR EN ACTUALIZAR PERFIL:", error);
+        return res.status(500).json({ msg: `❌ Error en el servidor - ${error.message}` });
+    }
+}
+
 export {
     registro,
     confirmarMail,
@@ -290,6 +454,8 @@ export {
     comprobarTokenPassword,
     crearNuevoPassword,
     login,
+    loginGoogle,
     perfil,
+    actualizarPerfil,
     crearUsuarioDesdeAdmin
 }
