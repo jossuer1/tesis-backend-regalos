@@ -12,7 +12,8 @@ import {
   actualizarPerfil
 } from "../controllers/usuario_controller.js"
 
-import { verificarTokenJWT } from "../middlewares/JWT.js"
+// 🟢 Aquí importamos ambos middlewares desde tu JWT.js
+import { verificarTokenJWT, esAdmin } from "../middlewares/JWT.js"
 
 const router = Router()
 
@@ -43,7 +44,7 @@ router.get("/perfil", verificarTokenJWT, perfil)
 // 🔵 ACTUALIZAR PERFIL (PROTEGIDO JWT)
 router.put("/perfil", verificarTokenJWT, actualizarPerfil)
 
-// 🔵 CREAR USUARIO DESDE ADMIN
+// 🔵 CREAR USUARIO DESDE ADMIN (Aplica verificarTokenJWT primero, luego esAdmin)
 router.post("/admin/crear-usuario", verificarTokenJWT, esAdmin, crearUsuarioDesdeAdmin)
 
 export default router
