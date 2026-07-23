@@ -519,6 +519,28 @@ const actualizarPerfil = async (req, res) => {
   }
 };
 
+// 👑 OBTENER TODOS LOS USUARIOS (Solo Admin - Con filtro opcional por rol)
+const obtenerUsuarios = async (req, res) => {
+  try {
+    const { rol } = req.query;
+    let filtro = {};
+
+    if (rol) {
+      filtro.rol = rol;
+    }
+
+    const usuarios = await Usuario.find(filtro)
+      .select("-password -token -__v")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json(usuarios);
+  } catch (error) {
+    console.error("ERROR OBTENER USUARIOS:", error);
+    return res.status(500).json({ msg: "❌ Error en el servidor" });
+  }
+};
+
 export {
   registro,
   confirmarMail,
@@ -530,4 +552,5 @@ export {
   perfil,
   actualizarPerfil,
   crearUsuarioDesdeAdmin,
+  obtenerUsuarios,
 };

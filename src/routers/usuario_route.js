@@ -1,4 +1,4 @@
-import { Router } from "express"
+import { Router } from "express";
 import {
   confirmarMail,
   crearNuevoPassword,
@@ -9,42 +9,51 @@ import {
   loginGoogle,
   perfil,
   crearUsuarioDesdeAdmin,
-  actualizarPerfil
-} from "../controllers/usuario_controller.js"
+  actualizarPerfil,
+  obtenerUsuarios,
+} from "../controllers/usuario_controller.js";
 
 // 🟢 Aquí importamos ambos middlewares desde tu JWT.js
-import { verificarTokenJWT, esAdmin } from "../middlewares/JWT.js"
+import { verificarTokenJWT, esAdmin } from "../middlewares/JWT.js";
 
-const router = Router()
+const router = Router();
 
 // 🟢 REGISTRO
-router.post("/registro", registro)
+router.post("/registro", registro);
 
 // 🟢 CONFIRMAR EMAIL
-router.get("/confirmar/:token", confirmarMail)
+router.get("/confirmar/:token", confirmarMail);
 
 // 🟢 LOGIN
-router.post("/login", login)
+router.post("/login", login);
 
 // 🟢 LOGIN / REGISTRO CON GOOGLE
-router.post("/google", loginGoogle)
+router.post("/google", loginGoogle);
 
 // 🟢 RECUPERAR PASSWORD
-router.post("/reset", recuperarPassword)
+router.post("/reset", recuperarPassword);
 
 // 🟢 VALIDAR TOKEN RESET
-router.get("/reset/:token", comprobarTokenPassword)
+router.get("/reset/:token", comprobarTokenPassword);
 
 // 🟢 NUEVA PASSWORD
-router.post("/nuevopassword/:token", crearNuevoPassword)
+router.post("/nuevopassword/:token", crearNuevoPassword);
 
 // 🔵 PERFIL (PROTEGIDO JWT)
-router.get("/perfil", verificarTokenJWT, perfil)
+router.get("/perfil", verificarTokenJWT, perfil);
 
 // 🔵 ACTUALIZAR PERFIL (PROTEGIDO JWT)
-router.put("/perfil", verificarTokenJWT, actualizarPerfil)
+router.put("/perfil", verificarTokenJWT, actualizarPerfil);
 
 // 🔵 CREAR USUARIO DESDE ADMIN (Aplica verificarTokenJWT primero, luego esAdmin)
-router.post("/admin/crear-usuario", verificarTokenJWT, esAdmin, crearUsuarioDesdeAdmin)
+router.post(
+  "/admin/crear-usuario",
+  verificarTokenJWT,
+  esAdmin,
+  crearUsuarioDesdeAdmin,
+);
 
-export default router
+// 👑 LISTAR USUARIOS (Solo Admin - admite ?rol=Cliente para filtrar)
+router.get("/admin/usuarios", verificarTokenJWT, esAdmin, obtenerUsuarios);
+
+export default router;
