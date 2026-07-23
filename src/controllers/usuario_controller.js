@@ -364,29 +364,23 @@ const loginGoogle = async (req, res) => {
     }
 }
 
-// ACTUALIZAR PERFIL DEL USUARIO AUTENTICADO
 const actualizarPerfil = async (req, res) => {
     try {
-        const { id } = req.params; // O puedes usar req.usuario._id directamente para mayor seguridad
+        const id = req.usuario._id; 
         const { nombre, apellido, telefono, direccion, email } = req.body;
 
-        // 1. Validar que el usuario que intenta editar sea el mismo dueño del token
-        if (req.usuario._id.toString() !== id) {
-            return res.status(403).json({ msg: "No tienes permisos para actualizar este perfil" });
-        }
-
-        // 2. Buscar al usuario en la base de datos
+        // 1. Buscar al usuario en la base de datos
         const usuarioBDD = await Usuario.findById(id);
         if (!usuarioBDD) {
             return res.status(404).json({ msg: "Usuario no encontrado" });
         }
 
-        // 3. Validar campos obligatorios mínimos
+        // 2. Validar campos obligatorios mínimos
         if (!nombre || !email) {
             return res.status(400).json({ msg: "El nombre y el correo electrónico son obligatorios" });
         }
 
-        // 4. Validar formato de Nombre y Apellido (Letras únicamente)
+        // 3. Validar formato de Nombre y Apellido (Letras únicamente)
         const regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
         if (!regexNombre.test(nombre.trim())) {
             return res.status(400).json({ msg: "El nombre solo puede contener letras" });
@@ -395,7 +389,7 @@ const actualizarPerfil = async (req, res) => {
             return res.status(400).json({ msg: "El apellido solo puede contener letras" });
         }
 
-        // 5. Validar formato del Teléfono (Solo números, de 7 a 15 dígitos)
+        // 4. Validar formato del Teléfono (Solo números, de 7 a 15 dígitos)
         if (telefono) {
             const regexTelefono = /^\d{7,15}$/;
             if (!regexTelefono.test(telefono.trim())) {
@@ -403,14 +397,14 @@ const actualizarPerfil = async (req, res) => {
             }
         }
 
-        // 6. Validar formato del Email
+        // 5. Validar formato del Email
         const emailNormalizado = email.toLowerCase().trim();
         const regexEmail = /\S+@\S+\.\S+/;
         if (!regexEmail.test(emailNormalizado)) {
             return res.status(400).json({ msg: "Correo electrónico inválido" });
         }
 
-        // 7. Verificar si el nuevo email ya está en uso por OTRO usuario
+        // 6. Verificar si el nuevo email ya está en uso por OTRO usuario
         if (usuarioBDD.email !== emailNormalizado) {
             const existeEmail = await Usuario.findOne({ email: emailNormalizado });
             if (existeEmail) {
@@ -419,16 +413,16 @@ const actualizarPerfil = async (req, res) => {
             usuarioBDD.email = emailNormalizado;
         }
 
-        // 8. Asignar los nuevos valores
+        // 7. Asignar los nuevos valores
         usuarioBDD.nombre = nombre.trim();
         usuarioBDD.apellido = apellido ? apellido.trim() : null;
         usuarioBDD.telefono = telefono ? telefono.trim() : null;
         usuarioBDD.direccion = direccion ? direccion.trim() : null;
 
-        // 9. Guardar cambios en la base de datos
+        // 8. Guardar cambios
         await usuarioBDD.save();
 
-        return res.status(200).json({ 
+        return res.status(200).json({
             msg: "Perfil actualizado correctamente",
             usuario: {
                 _id: usuarioBDD._id,
