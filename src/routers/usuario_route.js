@@ -41,9 +41,9 @@ router.post("/nuevopassword/:token", crearNuevoPassword)
 router.get("/perfil", verificarTokenJWT, perfil)
 
 // 🔵 ACTUALIZAR PERFIL (PROTEGIDO JWT)
-router.put("/perfil/actualizar/:id", verificarTokenJWT, actualizarPerfil)
+router.put("/perfil", verificarTokenJWT, actualizarPerfil)
 
 // 🔵 CREAR USUARIO DESDE ADMIN
-router.post("/admin/crear-usuario", crearUsuarioDesdeAdmin)
+router.post("/admin/crear-usuario", verificarTokenJWT, esAdmin, crearUsuarioDesdeAdmin)
 
 export default router
